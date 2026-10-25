@@ -4,7 +4,7 @@ import type { ActivityFilters as Filters } from "@/lib/activity-query";
 
 export default function ActivityFilters({ action, filters, withUser = false }: { action: string; filters: Filters; withUser?: boolean }) {
   return (
-    <form action={action} className="filter-bar" style={withUser ? { gridTemplateColumns: "repeat(5, minmax(0, 1fr)) auto" } : undefined}>
+    <form action={action} className={`filter-bar ${withUser ? "filter-bar-wide" : ""}`}>
       <div>
         <label htmlFor="tipo">Tipo de actividad</label>
         <select id="tipo" name="tipo" defaultValue={filters.tipo ?? ""}>

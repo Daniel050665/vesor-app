@@ -48,7 +48,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: { q?:
 
   return (
     <div>
-      <form action="/admin/usuarios" className="filter-bar" style={{ gridTemplateColumns: "2fr 1fr 1fr auto" }}>
+      <form action="/admin/usuarios" className="filter-bar filter-bar-users">
         <div>
           <label htmlFor="q">Buscar por nombre o correo</label>
           <input id="q" name="q" defaultValue={searchParams.q} />
