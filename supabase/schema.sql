@@ -125,6 +125,13 @@ create table if not exists saved_news (
   primary key (user_id, article_id)
 );
 
+-- Reparación idempotente: valores JSON guardados como texto (doble codificación) se convierten a JSON real.
+update app_users set interests = (interests #>> '{}')::jsonb where jsonb_typeof(interests) = 'string';
+update activity_log set details = (details #>> '{}')::jsonb where jsonb_typeof(details) = 'string';
+update analyses set input = (input #>> '{}')::jsonb where jsonb_typeof(input) = 'string';
+update analyses set resultado = (resultado #>> '{}')::jsonb where jsonb_typeof(resultado) = 'string';
+update chat_messages set meta = (meta #>> '{}')::jsonb where jsonb_typeof(meta) = 'string';
+
 -- El servidor se conecta con un rol propietario (que omite RLS). Activar RLS sin políticas
 -- bloquea el acceso directo desde la API pública de Supabase (anon/authenticated).
 alter table app_users enable row level security;

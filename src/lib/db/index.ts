@@ -25,8 +25,10 @@ async function createDriver(): Promise<Driver> {
     });
     return {
       kind: "postgres",
+      // postgres.js vuelve a serializar con JSON.stringify los parámetros de tipo json/jsonb. Como la app ya
+      // envía JSON en texto, se declara el parámetro como text y se convierte en SQL (evita la doble codificación).
       query: async <T,>(text: string, params: Params = []) =>
-        (await sql.unsafe(text, params as never[])) as unknown as T[],
+        (await sql.unsafe(text.replace(/(\$\d+)::jsonb/g, "$1::text::jsonb"), params as never[])) as unknown as T[],
       exec: async (text: string) => {
         await sql.unsafe(text).simple();
       },
@@ -51,10 +53,30 @@ async function createDriver(): Promise<Driver> {
   };
 }
 
+// Cambia este valor cuando se modifique SCHEMA_SQL para que se vuelva a aplicar.
+const SCHEMA_VERSION = "2026-10-25.1";
+
+/**
+ * Aplica el esquema solo si la versión guardada es distinta. Así los arranques en frío (p. ej. en Vercel)
+ * no ejecutan ALTER TABLE en cada instancia, que toma bloqueos exclusivos y puede frenar otras consultas.
+ * El esquema es idempotente, así que si dos instancias lo aplican a la vez el resultado es el mismo.
+ */
 async function init(): Promise<Driver> {
   const driver = await createDriver();
-  await driver.exec(SCHEMA_SQL);
-  await seedDatabase(driver.query);
+  await driver.exec(`create table if not exists schema_meta (key text primary key, value text not null)`);
+  const current = await driver.query<{ value: string }>(`select value from schema_meta where key = 'version'`);
+  if (current[0]?.value !== SCHEMA_VERSION) {
+    await driver.exec(SCHEMA_SQL);
+    await driver.exec(`alter table schema_meta enable row level security`);
+    await driver.query(
+      `insert into schema_meta (key, value) values ('version', $1) on conflict (key) do update set value = excluded.value`,
+      [SCHEMA_VERSION]
+    );
+    await seedDatabase(driver.query);
+  } else if (process.env.SEED_ADMIN_EMAIL || process.env.SEED_USER_EMAIL) {
+    // Las cuentas de prueba pueden configurarse después de crear el esquema.
+    await seedDatabase(driver.query);
+  }
   return driver;
 }
 
