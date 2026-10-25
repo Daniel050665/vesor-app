@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 416" role="img" aria-labelledby="title desc">
+  <title id="title">Vesor Group</title>
+  <desc id="desc">Logo de Vesor Group con una curva de riesgo y nodos empresariales.</desc>
+  <rect width="416" height="416" rx="12" fill="#101419"/>
+  <g fill="none" stroke="#67E8F9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M80 164 C124 164 135 91 208 91 S292 164 336 164" stroke-width="6"/>
+    <path d="M80 164h256" stroke-width="2" opacity=".55"/>
+    <path d="M208 52v112M208 118 143 164M208 118l65 46" stroke-width="2" opacity=".75"/>
+  </g>
+  <g fill="#67E8F9">
+    <circle cx="80" cy="164" r="5"/><circle cx="143" cy="164" r="5"/><circle cx="208" cy="164" r="5"/><circle cx="273" cy="164" r="5"/><circle cx="336" cy="164" r="5"/>
+    <circle cx="208" cy="118" r="6"/>
+  </g>
+  <g fill="#D4AF37">
+    <path d="M208 38 192 61h32z"/>
+    <path d="M184 68h48l-10 13h-28z"/>
+    <circle cx="208" cy="132" r="7"/>
+  </g>
+  <text x="208" y="254" text-anchor="middle" fill="#67E8F9" font-family="Arial,Helvetica,sans-serif" font-size="55" font-weight="700" letter-spacing="8">VESOR</text>
+  <text x="208" y="292" text-anchor="middle" fill="#D4AF37" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" letter-spacing="14">GROUP</text>
+</svg>

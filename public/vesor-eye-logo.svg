@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 300" role="img" aria-labelledby="title desc">
+  <title id="title">Vesor</title>
+  <desc id="desc">Isotipo de Vesor: un ojo con una flecha de crecimiento.</desc>
+  <rect width="416" height="300" rx="22" fill="#090b0f"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M52 151c65-74 145-78 205-2 60 76 116 42 157 2-52-76-130-92-201-25-61 58-111 29-161 25z" stroke="#727987" stroke-width="8"/>
+    <path d="M161 213 224 101l34 37 78-99" stroke="#a9ff35" stroke-width="16"/>
+    <path d="m336 39-8 40 39-32z" fill="#a9ff35" stroke="#a9ff35" stroke-width="3"/>
+    <circle cx="224" cy="113" r="17" fill="#a9ff35" stroke="none"/>
+    <circle cx="224" cy="113" r="35" stroke="#a9ff35" stroke-width="7"/>
+  </g>
+</svg>

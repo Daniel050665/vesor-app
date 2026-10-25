@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 416" role="img" aria-labelledby="title desc">
+  <title id="title">Vesor Invest &amp; Advisory</title>
+  <desc id="desc">Logo de Vesor Invest &amp; Advisory con una flecha de crecimiento.</desc>
+  <rect width="416" height="416" rx="18" fill="#090b0f"/>
+  <g fill="none" stroke="#a9ff35" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M94 142c43-50 84-50 125 0s82 50 125 0" stroke="#717783" stroke-width="7"/>
+    <path d="M94 142c43 50 84 50 125 0s82-50 125 0" stroke="#2e3540" stroke-width="4"/>
+    <path d="M171 184 229 96l30 32 47-70" stroke-width="13"/>
+    <path d="m297 58-7 32 28-24z" fill="#a9ff35" stroke="none"/>
+    <circle cx="229" cy="111" r="15" fill="#a9ff35" stroke="none"/>
+    <circle cx="229" cy="111" r="27" stroke="#a9ff35" stroke-width="5" opacity=".95"/>
+  </g>
+  <text x="208" y="256" text-anchor="middle" fill="#f7f4ec" font-family="Arial,Helvetica,sans-serif" font-size="58" font-weight="800" letter-spacing="8">VESOR</text>
+  <text x="208" y="300" text-anchor="middle" fill="#a9ff35" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" letter-spacing="8">INVEST &amp; ADVISORY</text>
+</svg>
