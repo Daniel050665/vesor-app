@@ -3,6 +3,7 @@ import { query, queryOne } from "@/lib/db";
 import { apiUser, jsonError, rateLimit, readJson } from "@/lib/auth";
 import { answerChat, type ChatTurn } from "@/lib/chat";
 import { logActivity } from "@/lib/activity";
+import { FREE_CHAT_LIMIT, planStatus } from "@/lib/billing";
 
 export const maxDuration = 60;
 
@@ -15,6 +16,16 @@ export async function POST(request: Request) {
   if (message.length > 2000) return jsonError("La pregunta es muy larga (máximo 2000 caracteres).", 422);
   if (!rateLimit(`chat:${user.id}`, 30, 10 * 60_000).allowed) {
     return jsonError("Has hecho muchas consultas seguidas. Espera unos minutos.", 429);
+  }
+
+  // Plan gratis: límite mensual de consultas al asistente (Premium es ilimitado; pago simulado).
+  const plan = await planStatus(user.id);
+  if (plan.remaining !== null && plan.remaining <= 0) {
+    return jsonError(
+      `Usaste tus ${FREE_CHAT_LIMIT} consultas gratis de este mes. Pásate a Premium para seguir preguntando sin límite.`,
+      402,
+      { upgrade: "/planes" }
+    );
   }
 
   let conversationId = typeof body?.conversationId === "string" ? body.conversationId : null;

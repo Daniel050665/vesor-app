@@ -222,3 +222,37 @@ test("administración: suspender y reactivar una cuenta cierra sus sesiones", as
   assert.equal((await admin(`/api/admin/users/${userId}`, { method: "PATCH", body: { status: "active" } })).status, 200);
   assert.equal((await client()("/api/auth/login", { method: "POST", body: { email, password: strongPassword } })).status, 200);
 });
+
+test("planes: límite del plan gratis y suscripción Premium simulada", async () => {
+  const http = client();
+  await http("/api/auth/register", { method: "POST", body: { ...validRegistration, email: `plan.${Date.now()}@vesor.test` } });
+
+  let status = (await http("/api/subscription")).data;
+  assert.equal(status.plan, "gratis");
+  assert.equal(status.limit, 20);
+
+  // Plan gratis: 20 consultas al mes; la 21 se rechaza con 402 y enlace a planes.
+  for (let i = 0; i < 20; i++) {
+    const r = await http("/api/chat", { method: "POST", body: { message: "¿Qué es un ETF?" } });
+    assert.equal(r.status, 200, `consulta ${i + 1}`);
+  }
+  const blocked = await http("/api/chat", { method: "POST", body: { message: "¿Qué es un ETF?" } });
+  assert.equal(blocked.status, 402);
+  assert.equal(blocked.data.upgrade, "/planes");
+
+  // Pago simulado: se acepta sin datos de tarjeta (el servidor nunca los recibe).
+  assert.equal((await http("/api/subscription", { method: "POST", body: { cycle: "semanal" } })).status, 422);
+  const sub = await http("/api/subscription", { method: "POST", body: { cycle: "anual" } });
+  assert.equal(sub.status, 200);
+  assert.match(sub.data.subscription.receipt_code, /^VSR-\d{4}-[0-9A-F]{8}$/);
+  assert.equal(sub.data.subscription.price_cop, 149000);
+  status = (await http("/api/subscription")).data;
+  assert.equal(status.plan, "premium");
+  assert.equal(status.remaining, null);
+  assert.equal((await http("/api/chat", { method: "POST", body: { message: "¿Qué es un ETF?" } })).status, 200);
+
+  // Cancelar vuelve al plan gratis.
+  assert.equal((await http("/api/subscription", { method: "DELETE" })).status, 200);
+  assert.equal((await http("/api/subscription")).data.plan, "gratis");
+  assert.equal((await http("/api/subscription", { method: "DELETE" })).status, 404);
+});

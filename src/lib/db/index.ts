@@ -54,7 +54,7 @@ async function createDriver(): Promise<Driver> {
 }
 
 // Cambia este valor cuando se modifique SCHEMA_SQL para que se vuelva a aplicar.
-const SCHEMA_VERSION = "2026-10-25.1";
+const SCHEMA_VERSION = "2026-11-08.1";
 
 /**
  * Aplica el esquema solo si la versión guardada es distinta. Así los arranques en frío (p. ej. en Vercel)

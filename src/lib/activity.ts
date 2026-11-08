@@ -16,6 +16,9 @@ export const ACTIVITY_TYPES = {
   news_open: "Noticia visitada",
   news_save: "Noticia guardada",
   news_unsave: "Noticia eliminada de guardadas",
+  subscription: "Suscripción Premium",
+  subscription_cancel: "Suscripción cancelada",
+  plan_interest: "Interés en plan Empresas",
   admin_action: "Acción administrativa",
 } as const;
 

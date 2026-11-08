@@ -125,6 +125,23 @@ create table if not exists saved_news (
   primary key (user_id, article_id)
 );
 
+-- Suscripciones SIMULADAS: no hay cobros reales ni datos de tarjeta almacenados.
+create table if not exists subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references app_users(id) on delete cascade,
+  plan text not null check (plan in ('premium')),
+  billing_cycle text not null check (billing_cycle in ('mensual', 'anual')),
+  price_cop integer not null,
+  status text not null default 'active' check (status in ('active', 'canceled')),
+  payment_method text not null default 'simulado',
+  receipt_code text not null,
+  started_at timestamptz not null default now(),
+  renews_at timestamptz not null,
+  canceled_at timestamptz
+);
+create index if not exists subscriptions_user_idx on subscriptions (user_id, started_at desc);
+create unique index if not exists subscriptions_one_active_idx on subscriptions (user_id) where status = 'active';
+
 -- Reparación idempotente: valores JSON guardados como texto (doble codificación) se convierten a JSON real.
 update app_users set interests = (interests #>> '{}')::jsonb where jsonb_typeof(interests) = 'string';
 update activity_log set details = (details #>> '{}')::jsonb where jsonb_typeof(details) = 'string';
@@ -145,4 +162,5 @@ alter table chat_messages enable row level security;
 alter table news_sources enable row level security;
 alter table news_articles enable row level security;
 alter table saved_news enable row level security;
+alter table subscriptions enable row level security;
 `;

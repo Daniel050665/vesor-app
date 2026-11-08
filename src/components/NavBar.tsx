@@ -17,9 +17,10 @@ export default async function NavBar() {
         { href: "/noticias", label: "Noticias" },
         { href: "/historial", label: "Historial" },
         { href: "/perfil", label: "Perfil" },
+        { href: "/planes", label: "Planes" },
         ...(user.role === "admin" ? [{ href: "/admin", label: "Admin" }] : []),
       ]
-    : [{ href: "/noticias", label: "Noticias" }];
+    : [{ href: "/noticias", label: "Noticias" }, { href: "/planes", label: "Planes" }];
 
   return (
     <header className="nav">

@@ -30,6 +30,7 @@ export default function ChatApp({ initialConversations, level, aiEnabled, initia
   const [text, setText] = useState(initialQuestion ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [upgrade, setUpgrade] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -85,6 +86,7 @@ export default function ChatApp({ initialConversations, level, aiEnabled, initia
         body: JSON.stringify({ message, conversationId: activeId }),
       });
       const payload = await response.json();
+      setUpgrade(response.status === 402);
       if (!response.ok) throw new Error(payload.error || "No pudimos responder.");
       setActiveId(payload.conversationId);
       setMessages((m) => [...m, payload.message]);
@@ -143,7 +145,12 @@ export default function ChatApp({ initialConversations, level, aiEnabled, initia
             )
           )}
           {busy && <p className="typing">Analizando</p>}
-          {error && <div className="error" role="alert">{error}</div>}
+          {error && (
+            <div className="error" role="alert">
+              {error}{" "}
+              {upgrade && <a href="/planes">Ver planes →</a>}
+            </div>
+          )}
         </div>
         <form className="chat-form" onSubmit={(e) => { e.preventDefault(); send(); }}>
           <textarea

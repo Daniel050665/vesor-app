@@ -4,6 +4,7 @@ import { databaseKind, query, queryOne } from "@/lib/db";
 import { marketProviderStatus } from "@/lib/market-data";
 import { newsSourcesStatus } from "@/lib/news";
 import { timeAgo } from "@/lib/format";
+import { cop } from "@/lib/billing";
 import { ACTIVITY_TYPES, type ActivityType } from "@/lib/activity";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,10 @@ type Stats = {
   sims: number;
   articles: number;
   conversations: number;
+  premium: number;
+  mrr: number;
+  billed: number;
+  interest: number;
 };
 
 export default async function AdminHome() {
@@ -35,7 +40,12 @@ export default async function AdminHome() {
       (select count(*)::int from activity_log where type = 'chat_query' and created_at > now() - interval '7 days') as chats7,
       (select count(*)::int from analyses) as sims,
       (select count(*)::int from news_articles) as articles,
-      (select count(*)::int from chat_conversations) as conversations`))!;
+      (select count(*)::int from chat_conversations) as conversations,
+      (select count(*)::int from subscriptions where status = 'active' and renews_at > now()) as premium,
+      (select coalesce(sum(case when billing_cycle = 'anual' then price_cop / 12 else price_cop end), 0)::int
+         from subscriptions where status = 'active' and renews_at > now()) as mrr,
+      (select coalesce(sum(price_cop), 0)::int from subscriptions) as billed,
+      (select count(distinct user_id)::int from activity_log where type = 'plan_interest') as interest`))!;
 
   const daily = await query<{ day: string; n: number }>(
     `select to_char(d, 'MM-DD') as day, coalesce(count(a.id), 0)::int as n
@@ -74,6 +84,9 @@ export default async function AdminHome() {
         <div className="stat"><span>Consultas al asistente (7 días)</span><strong>{stats.chats7}</strong><small>{stats.conversations} conversaciones totales</small></div>
         <div className="stat"><span>Análisis guardados</span><strong>{stats.sims}</strong></div>
         <div className="stat"><span>Noticias en caché</span><strong>{stats.articles}</strong></div>
+        <div className="stat"><span>Suscriptores Premium</span><strong>{stats.premium}</strong><small>{stats.users ? Math.round((stats.premium / stats.users) * 100) : 0}% de conversión</small></div>
+        <div className="stat"><span>Ingreso mensual recurrente (simulado)</span><strong>{cop(stats.mrr)}</strong><small>Total facturado simulado: {cop(stats.billed)}</small></div>
+        <div className="stat"><span>Interés en plan Empresas</span><strong>{stats.interest}</strong><small>usuarios pidieron contacto</small></div>
       </div>
 
       <div className="grid-2 section">
