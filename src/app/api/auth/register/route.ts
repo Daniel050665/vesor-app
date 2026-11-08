@@ -36,5 +36,5 @@ export async function POST(request: Request) {
   await logActivity(user.id, "register", "Cuenta creada", { interests: d.interests, experience: d.experience });
   await createSession(user.id);
   await logActivity(user.id, "login", "Inicio de sesión tras el registro");
-  return NextResponse.json({ ok: true, redirect: "/panel" });
+  return NextResponse.json({ ok: true, redirect: "/panel?bienvenida=1" });
 }

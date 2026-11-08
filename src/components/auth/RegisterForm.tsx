@@ -63,7 +63,7 @@ export default function RegisterForm() {
     <>
       <p className="eyebrow">Crea tu perfil</p>
       <h1>Crear cuenta</h1>
-      <p className="muted">Con tu perfil adaptamos el panel, las noticias y las explicaciones del asistente a tu nivel e intereses.</p>
+      <p className="muted">Tarda menos de 2 minutos.</p>
       <form onSubmit={onSubmit} noValidate>
         <div className="form-section">
           <h2>Tus datos</h2>

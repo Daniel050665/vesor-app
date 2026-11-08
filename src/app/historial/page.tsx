@@ -22,9 +22,8 @@ export default async function HistorialPage({ searchParams }: { searchParams: Fi
     <div>
       <div className="page-head">
         <div>
-          <p className="eyebrow">Historial</p>
-          <h1>Tu actividad</h1>
-          <p className="muted">Sesiones, consultas al asistente, análisis, activos y noticias. Solo tú puedes ver este historial.</p>
+          <h1>Historial</h1>
+          <p className="muted">Solo tú puedes verlo.</p>
         </div>
       </div>
 

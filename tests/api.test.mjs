@@ -72,7 +72,7 @@ test("registro valida datos y rechaza duplicados", async () => {
 
   const ok = await http("/api/auth/register", { method: "POST", body: validRegistration });
   assert.equal(ok.status, 200, JSON.stringify(ok.data));
-  assert.equal(ok.data.redirect, "/panel");
+  assert.equal(ok.data.redirect, "/panel?bienvenida=1");
   const panel = await http("/panel");
   assert.equal(panel.status, 200);
 
@@ -91,7 +91,7 @@ test("inicio de sesión: credenciales incorrectas y cuentas de prueba", async ()
   assert.ok(env.SEED_USER_PASSWORD && env.SEED_ADMIN_PASSWORD, "Faltan SEED_*_PASSWORD en .env.local");
   const user = await client()("/api/auth/login", { method: "POST", body: { email: env.SEED_USER_EMAIL, password: env.SEED_USER_PASSWORD } });
   assert.equal(user.status, 200);
-  assert.equal(user.data.redirect, "/panel");
+  assert.equal(user.data.redirect, "/panel?bienvenida=1");
   const admin = await client()("/api/auth/login", { method: "POST", body: { email: env.SEED_ADMIN_EMAIL, password: env.SEED_ADMIN_PASSWORD } });
   assert.equal(admin.status, 200);
   assert.equal(admin.data.redirect, "/admin");

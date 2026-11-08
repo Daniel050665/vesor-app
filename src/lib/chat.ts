@@ -10,9 +10,6 @@ export type ChatAnswer = { content: string; engine: "claude" | "local"; symbols:
 
 type Snapshot = { asset: Asset; quote: MarketQuote; history: PriceHistory | null; indicators: Indicators | null };
 
-const DISCLAIMER =
-  "Análisis educativo: no garantiza rendimientos ni reemplaza tu propia evaluación del riesgo o la asesoría de un profesional autorizado.";
-
 const fmtNum = (n: number | null | undefined, digits = 2) =>
   n === null || n === undefined || !Number.isFinite(n) ? "s/d" : n.toLocaleString("es-CO", { maximumFractionDigits: digits });
 const fmtPct = (n: number | null | undefined) => (n === null || n === undefined ? "s/d" : `${n >= 0 ? "+" : ""}${fmtNum(n, 1)}%`);
@@ -116,33 +113,27 @@ function normalize(text: string) {
   return text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
 
-function interpret(i: Indicators, level: ChatProfile["experience"]) {
+function interpret(i: Indicators) {
   const lines: string[] = [];
-  if (i.rsi14 !== null) {
-    const zone = i.rsi14 > 70 ? "zona de sobrecompra (subió rápido; puede corregir)" : i.rsi14 < 30 ? "zona de sobreventa (cayó con fuerza)" : "zona neutral";
-    lines.push(`- **RSI 14:** ${fmtNum(i.rsi14, 0)} → ${zone}.`);
+  lines.push(`- **Rendimiento:** ${fmtPct(i.return30d)} en 30 días · ${fmtPct(i.return90d)} en 90 días.`);
+  if (i.volatilityAnnual !== null || i.maxDrawdown !== null) {
+    lines.push(`- **Riesgo medido:** volatilidad ${fmtNum(i.volatilityAnnual, 0)}% anual · peor caída ${fmtPct(i.maxDrawdown)}.`);
   }
-  if (i.trend !== "sin datos") {
-    lines.push(`- **Tendencia (medias móviles 20/50):** ${i.trend}${level === "principiante" ? " — compara el precio promedio reciente con el de un periodo más largo." : ` (SMA20 ${fmtNum(i.sma20)} vs SMA50 ${fmtNum(i.sma50)}).`}`);
+  if (i.rsi14 !== null || i.trend !== "sin datos") {
+    const zone = i.rsi14 === null ? "" : i.rsi14 > 70 ? " (subió rápido)" : i.rsi14 < 30 ? " (cayó con fuerza)" : " (neutral)";
+    lines.push(`- **Tendencia:** ${i.trend} · RSI ${fmtNum(i.rsi14, 0)}${zone}.`);
   }
-  lines.push(`- **Rendimiento:** 30 días ${fmtPct(i.return30d)} · 90 días ${fmtPct(i.return90d)}.`);
-  if (i.volatilityAnnual !== null) lines.push(`- **Volatilidad anualizada:** ${fmtNum(i.volatilityAnnual, 0)}%.`);
-  if (i.maxDrawdown !== null) lines.push(`- **Caída máxima en el periodo:** ${fmtPct(i.maxDrawdown)}.`);
   return lines;
 }
 
-function snapshotSection(s: Snapshot, level: ChatProfile["experience"]) {
+function snapshotSection(s: Snapshot, _level: ChatProfile["experience"], compact = false) {
   const lines = [
     `### ${s.asset.name} (${s.asset.symbol})`,
-    `${ASSET_TYPE_LABEL[s.asset.type]} · ${s.asset.sector} · ${VOLATILITY_INFO[s.asset.volatility].label}`,
-    `- **Precio:** ${fmtUsd(s.quote.price)} (${fmtPct(s.quote.changePct)}) — ${s.quote.isDemo ? "⚠️ dato simulado, no es una cotización real" : `fuente: ${s.quote.source}`}.`,
+    `- **Precio:** ${fmtUsd(s.quote.price)} (${fmtPct(s.quote.changePct)}) · ${s.quote.isDemo ? "⚠️ simulado" : s.quote.source}`,
   ];
-  if (s.indicators && s.history) {
-    lines.push(...interpret(s.indicators, level));
-    if (s.history.isDemo) lines.push("- ⚠️ Los indicadores se calcularon sobre una serie **simulada**: sirven para aprender a leerlos, no para decidir.");
-  }
-  lines.push(`- **Ventaja principal:** ${s.asset.description}`);
-  lines.push(`- **Riesgos:** ${s.asset.risks} ${VOLATILITY_INFO[s.asset.volatility].loss}`);
+  if (s.indicators && s.history) lines.push(...interpret(s.indicators));
+  if (!compact) lines.push(`- **Qué es:** ${s.asset.description}`);
+  lines.push(`- **Riesgo:** ${VOLATILITY_INFO[s.asset.volatility].loss}`);
   return lines.join("\n");
 }
 
@@ -157,18 +148,18 @@ function answerLocal(profile: ChatProfile, message: string, snapshots: Snapshot[
 
   if (snapshots.length >= 2) {
     parts.push(`Comparación de ${snapshots.map((s) => s.asset.symbol).join(" vs ")}:`);
-    parts.push(...snapshots.map((s) => snapshotSection(s, level)));
+    parts.push(...snapshots.map((s) => snapshotSection(s, level, true)));
     const withVol = snapshots.filter((s) => s.indicators?.volatilityAnnual !== null && s.indicators);
     if (withVol.length >= 2) {
       const sorted = [...withVol].sort((a, b) => (b.indicators!.volatilityAnnual ?? 0) - (a.indicators!.volatilityAnnual ?? 0));
       parts.push(
-        `**Lectura comparativa:** ${sorted[0].asset.symbol} ha sido el más volátil en el periodo y ${sorted[sorted.length - 1].asset.symbol} el más estable. Mayor volatilidad implica mayores oscilaciones, en ambas direcciones.`
+        `**Lectura comparativa:** ${sorted[0].asset.symbol} ha sido el más volátil en el periodo y ${sorted[sorted.length - 1].asset.symbol} el más estable. `
       );
     }
   } else if (snapshots.length === 1) {
     parts.push(snapshotSection(snapshots[0], level));
     parts.push(
-      "**Qué verificar antes de decidir:** resultados financieros recientes, noticias de la empresa o del proyecto, cuánto pesaría en tu portafolio y si podrías soportar la caída máxima indicada sin vender."
+      "**Antes de decidir:** revisa sus últimos resultados y si podrías soportar esa caída sin vender."
     );
   }
 
@@ -184,7 +175,7 @@ function answerLocal(profile: ChatProfile, message: string, snapshots: Snapshot[
       "Puedo ayudarte con:\n- **Analizar un activo:** «¿Cómo va NVDA?», «Analiza Bitcoin».\n- **Comparar:** «Compara SPY con QQQ».\n- **Explicar conceptos:** «¿Qué es el RSI?», «¿Qué es un ETF?».\n- **Ideas según tu perfil:** «¿Qué podría investigar según mis intereses?».\n\nNo encontré un activo del catálogo ni un concepto conocido en tu mensaje; intenta mencionar el símbolo (por ejemplo AAPL, BTC o SPY)."
     );
   }
-  parts.push(`_Modo local: respuesta generada con reglas y datos del catálogo, sin IA generativa._\n\n${DISCLAIMER}`);
+  parts.push(`_Modo local · Educativo, no es asesoría financiera._${snapshots.some((x) => x.quote.isDemo) ? " _Los datos marcados ⚠️ son simulados._" : ""}`);
   return parts.join("\n\n");
 }
 
@@ -203,7 +194,7 @@ export async function answerChat(profile: ChatProfile, history: ChatTurn[], mess
     recsText = recs
       .map(
         (r) =>
-          `- **${r.asset.symbol} · ${r.asset.name}** (${r.fit}). ${r.reasons.slice(0, 2).join(" ")} Riesgos: ${r.cautions.slice(0, 2).join(" ")}`
+          `- **${r.asset.symbol} · ${r.asset.name}** (${r.fit}): ${r.reasons[0] ?? ""} ⚠ ${r.cautions[r.cautions.length - 1]}`
       )
       .join("\n");
   }

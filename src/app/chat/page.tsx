@@ -16,8 +16,7 @@ export default async function ChatPage({ searchParams }: { searchParams: { q?: s
     <div>
       <div className="page-head" style={{ marginBottom: 16 }}>
         <div>
-          <p className="eyebrow">Asistente de análisis financiero</p>
-          <h1>Pregunta antes de invertir</h1>
+          <h1>Asistente IA</h1>
         </div>
       </div>
       <ChatApp

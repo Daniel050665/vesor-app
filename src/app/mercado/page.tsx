@@ -38,9 +38,8 @@ export default async function MercadoPage({ searchParams }: { searchParams: Sear
     <div>
       <div className="page-head">
         <div>
-          <p className="eyebrow">Mercado</p>
-          <h1>Activos para analizar</h1>
-          <p className="muted">Acciones: {providers.stocks}. Criptomonedas: {providers.crypto}. Cada precio indica su fuente.</p>
+          <h1>Mercado</h1>
+          <p className="muted">Cripto en vivo · {providers.stocks.startsWith("Demo") ? "Acciones con precios demo" : `Acciones: ${providers.stocks}`}</p>
         </div>
         <form className="filters" action="/mercado" style={{ margin: 0 }}>
           {searchParams.tipo && <input type="hidden" name="tipo" value={searchParams.tipo} />}
@@ -71,7 +70,7 @@ export default async function MercadoPage({ searchParams }: { searchParams: Sear
           {assets.map((a) => <AssetCard key={a.symbol} asset={a} quote={quoteOf.get(a.symbol)} watching={watch.has(a.symbol)} />)}
         </div>
       )}
-      <p className="footer-note">Los precios marcados como «Demo» son simulados y no deben usarse como cotizaciones reales.</p>
+      <p className="footer-note">«Demo» = precio simulado, no es una cotización real.</p>
     </div>
   );
 }

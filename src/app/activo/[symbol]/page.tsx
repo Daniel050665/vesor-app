@@ -92,16 +92,16 @@ export default async function ActivoPage({ params }: { params: { symbol: string 
             <div><span>RSI 14</span><strong>{num(ind.rsi14, 0)}</strong></div>
             <div><span>Tendencia</span><strong style={{ textTransform: "capitalize" }}>{ind.trend}</strong></div>
           </div>
-          <div className="card" style={{ marginTop: 12 }}>
-            <h3 style={{ marginTop: 0, fontSize: 16 }}>Cómo leer estos datos</h3>
+          <details className="card help-details" style={{ marginTop: 12 }}>
+            <summary>¿Cómo leer estos datos?</summary>
             <ul className="muted" style={{ margin: 0, paddingLeft: 18 }}>
               <li><strong>RSI:</strong> {rsiText}</li>
               <li><strong>Volatilidad:</strong> {beginner ? "cuánto se mueve el precio. Más volatilidad = subidas y bajadas más bruscas." : "desviación estándar anualizada de los rendimientos diarios logarítmicos."}</li>
               <li><strong>Caída máxima:</strong> la peor pérdida desde un máximo dentro del periodo mostrado; en el futuro podría ser mayor.</li>
               <li><strong>Tendencia:</strong> {beginner ? "compara el precio promedio de 20 días con el de 50 días." : "cruce SMA20/SMA50 con confirmación del último cierre; es una señal rezagada."}</li>
             </ul>
-            <p className="disclaimer">Los indicadores describen el pasado y no predicen el comportamiento futuro.</p>
-          </div>
+            <p className="disclaimer">Describen el pasado; no predicen el futuro.</p>
+          </details>
         </section>
       )}
 
@@ -111,7 +111,7 @@ export default async function ActivoPage({ params }: { params: { symbol: string 
           <p><strong>Qué es:</strong> {asset.description}</p>
           <p><strong>Riesgos principales:</strong> {asset.risks}</p>
           <p><strong>Pérdidas posibles:</strong> {VOLATILITY_INFO[asset.volatility].loss}</p>
-          {asset.type !== "etf" && <p className="muted">Concentrar dinero en un solo activo aumenta el riesgo; compáralo con un ETF diversificado.</p>}
+          
         </section>
         <section className="card">
           <h2 style={{ fontSize: 18 }}>Noticias relacionadas</h2>

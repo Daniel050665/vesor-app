@@ -53,8 +53,9 @@ export function RecommendationCard({ rec }: { rec: Recommendation }) {
         </div>
         <span className={fitClass}>{rec.fit}</span>
       </div>
-      <ul>{rec.reasons.slice(0, 3).map((r) => <li key={r}>{r}</li>)}</ul>
-      <ul className="cautions">{rec.cautions.slice(0, 3).map((c) => <li key={c}>{c}</li>)}</ul>
+      {rec.reasons[0] && <p className="rec-why">{rec.reasons[0]}</p>}
+      {/* La última advertencia siempre es la pérdida posible según la volatilidad. */}
+      <p className="rec-risk">⚠ {rec.cautions[rec.cautions.length - 1]}</p>
     </article>
   );
 }

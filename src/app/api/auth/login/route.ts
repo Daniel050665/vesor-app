@@ -41,6 +41,6 @@ export async function POST(request: Request) {
   clearRateLimit(key);
   await createSession(user.id);
   await logActivity(user.id, "login", "Inicio de sesión");
-  const fallback = user.role === "admin" ? "/admin" : "/panel";
+  const fallback = user.role === "admin" ? "/admin" : "/panel?bienvenida=1";
   return NextResponse.json({ ok: true, redirect: safeNext(body.next) ?? fallback });
 }

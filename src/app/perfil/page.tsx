@@ -11,9 +11,8 @@ export default async function PerfilPage() {
     <div>
       <div className="page-head">
         <div>
-          <p className="eyebrow">Perfil</p>
-          <h1>Tu cuenta y preferencias</h1>
-          <p className="muted">Puedes cambiar tus intereses, nivel y tolerancia al riesgo cuando quieras; la personalización se actualiza al instante.</p>
+          <h1>Perfil</h1>
+          <p className="muted">Los cambios se aplican al instante.</p>
         </div>
       </div>
       <div className="dash-grid">

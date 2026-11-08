@@ -118,9 +118,8 @@ export default function Simulator() {
     <div className="simulator-page">
       <div className="simulator-heading">
         <div>
-          <p className="eyebrow">Laboratorio de decisiones</p>
-          <h1>Análisis de riesgo inteligente</h1>
-          <p className="muted">Explora escenarios, revisa las señales y entiende el riesgo antes de tomar una decisión de inversión.</p>
+          <h1>Análisis de riesgo</h1>
+          <p className="muted">Simula escenarios antes de invertir.</p>
         </div>
         <span className="prototype-tag" title="Las noticias y relaciones del simulador son datos de ejemplo">Datos de demostración</span>
       </div>
@@ -129,7 +128,7 @@ export default function Simulator() {
         <div className="simulator-config-head">
           <div>
             <h2>Configura el escenario</h2>
-            <p className="muted">El modo automático aplica valores razonables. Personaliza el alcance cuando quieras.</p>
+            
           </div>
           <div className="mode-switch" role="group" aria-label="Modo de análisis">
             <button type="button" className={config.mode === "automatico" ? "mode-active" : ""} onClick={() => updateConfig("mode", "automatico")}>Automático</button>
@@ -165,7 +164,7 @@ export default function Simulator() {
 
         <label htmlFor="amount">Monto estimado de inversión (COP)</label>
         <input id="amount" type="number" min="0" step="10000" value={config.amount} onChange={(event) => updateConfig("amount", Number(event.target.value))} placeholder="Ej: 500000" />
-        <p className="field-hint">Se usa para mostrar la exposición estimada; no cambia por sí solo el riesgo de la empresa.</p>
+        
 
         <label htmlFor="context">Contexto de la oportunidad</label>
         <textarea
@@ -175,7 +174,7 @@ export default function Simulator() {
           onChange={(event) => updateConfig("context", event.target.value)}
           placeholder="Ej: Una persona dice que depositando en la plataforma X duplico el dinero en 30 días y pide pagar a una billetera cripto."
         />
-        <p className="field-hint">Detectamos señales de riesgo en el texto. Para preguntas abiertas sobre un activo usa el Asistente IA.</p>
+        <p className="field-hint">Detectamos señales de riesgo en lo que escribas.</p>
 
         {config.mode === "personalizado" && (
           <div className="advanced-config">

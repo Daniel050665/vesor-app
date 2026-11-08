@@ -116,12 +116,9 @@ export default function ChatApp({ initialConversations, level, aiEnabled, initia
         <div className="chat-log" ref={logRef} aria-live="polite">
           {messages.length === 0 && (
             <div>
-              <p className="muted">
-                Pregunta por acciones, ETF o criptomonedas del catálogo, pide comparaciones o la explicación de un concepto. Las respuestas se adaptan a tu nivel
-                ({level}) e indican si los datos son reales o simulados.
-              </p>
+              <p className="muted">Pregunta por un activo, compara dos o pide que te expliquen un concepto.</p>
               {!aiEnabled && (
-                <p className="demo-note" style={{ marginBottom: 12 }}>Modo local: configura ANTHROPIC_API_KEY para respuestas con IA generativa.</p>
+                <p className="demo-note" style={{ marginBottom: 12 }}>Modo local: respuestas sin IA generativa.</p>
               )}
               <div className="suggestions">
                 {(SUGGESTIONS[level] ?? SUGGESTIONS.principiante).map((s) => (

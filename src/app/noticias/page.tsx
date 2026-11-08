@@ -42,11 +42,10 @@ export default async function NoticiasPage({ searchParams }: { searchParams: Sea
     <div>
       <div className="page-head">
         <div>
-          <p className="eyebrow">Noticias financieras</p>
-          <h1>Lo que mueve al mercado</h1>
+          <h1>Noticias</h1>
           <p className="muted">
-            Titulares de {providers.join(", ") || "fuentes públicas"} vía RSS oficial. Cada noticia enlaza a su publicación original
-            {lastUpdate ? ` · actualizado ${timeAgo(lastUpdate)}` : ""}.
+            {providers.slice(0, 3).join(", ") || "Fuentes públicas"}{providers.length > 3 ? " y más" : ""}
+            {lastUpdate ? ` · actualizado ${timeAgo(lastUpdate)}` : ""}
           </p>
         </div>
         <form action="/noticias" className="filters" style={{ margin: 0 }}>
@@ -96,8 +95,8 @@ export default async function NoticiasPage({ searchParams }: { searchParams: Sea
         </div>
       )}
       <p className="footer-note">
-        Los titulares pertenecen a sus respectivos medios y se muestran con enlace a la fuente original. La mayoría de fuentes publica en inglés.
-        {!user && <> <Link href="/registro">Crea una cuenta</Link> para filtrar por tus intereses y guardar noticias.</>}
+        Titulares de cada medio, con enlace al original (la mayoría en inglés).
+        {!user && <> <Link href="/registro">Crea una cuenta</Link> para filtrar y guardar.</>}
       </p>
     </div>
   );
