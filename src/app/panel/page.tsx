@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { ASSETS, findAsset } from "@/lib/assets";
-import { MARKET_OVERVIEW_SYMBOLS, getQuotes } from "@/lib/market-data";
+import { CRYPTO_SYMBOLS, MARKET_OVERVIEW_SYMBOLS, getQuotes } from "@/lib/market-data";
 import { newsCategoriesFor, recommendAssets } from "@/lib/personalization";
 import { listNews } from "@/lib/news";
 import { interestLabel } from "@/lib/validation";
@@ -10,6 +10,7 @@ import { ACTIVITY_TYPES, type ActivityType } from "@/lib/activity";
 import { pct, timeAgo, usd } from "@/lib/format";
 import { AssetCard, RecommendationCard } from "@/components/AssetCards";
 import OnboardingCarousel from "@/components/OnboardingCarousel";
+import CryptoTicker from "@/components/CryptoTicker";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Mi panel — Vesor" };
@@ -21,7 +22,7 @@ export default async function PanelPage({ searchParams }: { searchParams: { dene
   const recs = recommendAssets(user, watchlist, 4);
 
   const [quotes, news, activity] = await Promise.all([
-    getQuotes(Array.from(new Set([...MARKET_OVERVIEW_SYMBOLS, ...watchlist]))),
+    getQuotes(Array.from(new Set([...MARKET_OVERVIEW_SYMBOLS, ...CRYPTO_SYMBOLS, ...watchlist]))),
     listNews({ categories: newsCategoriesFor(user.interests), userId: user.id, limit: 4 }).catch(() => null),
     query<{ id: string; type: ActivityType; title: string; created_at: string }>(
       `select id, type, title, created_at from activity_log where user_id = $1 order by created_at desc limit 4`,
@@ -49,10 +50,12 @@ export default async function PanelPage({ searchParams }: { searchParams: { dene
         </div>
       </div>
 
-      <section aria-labelledby="mercado-h">
+      <CryptoTicker initial={CRYPTO_SYMBOLS.map((s) => quoteOf.get(s)!).filter(Boolean)} />
+
+      <section className="section" aria-labelledby="mercado-h">
         <div className="section-head">
-          <h2 id="mercado-h">Mercado hoy</h2>
-          {anyDemo && <span className="muted small">Acciones: precios demo · Cripto: en vivo</span>}
+          <h2 id="mercado-h">Índices</h2>
+          {anyDemo && <span className="muted small">Precios demo</span>}
         </div>
         <div className="ticker-grid">
           {overview.map((q) => (

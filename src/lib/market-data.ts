@@ -319,7 +319,8 @@ export async function getMarketQuotes() {
   };
 }
 
-export const MARKET_OVERVIEW_SYMBOLS = ["SPY", "QQQ", "DIA", "BND", "BTC", "ETH"];
+export const MARKET_OVERVIEW_SYMBOLS = ["SPY", "QQQ", "DIA", "BND"];
+export const CRYPTO_SYMBOLS = ASSETS.filter((a) => a.coingeckoId).map((a) => a.symbol);
 
 export function marketProviderStatus() {
   return {

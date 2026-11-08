@@ -2,7 +2,8 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { ASSETS, ASSET_TYPE_LABEL, type AssetType } from "@/lib/assets";
-import { getQuotes, marketProviderStatus } from "@/lib/market-data";
+import { CRYPTO_SYMBOLS, getQuotes, marketProviderStatus } from "@/lib/market-data";
+import CryptoTicker from "@/components/CryptoTicker";
 import { INTERESTS } from "@/lib/validation";
 import { AssetCard } from "@/components/AssetCards";
 
@@ -30,7 +31,7 @@ export default async function MercadoPage({ searchParams }: { searchParams: Sear
     if (q && !`${a.symbol} ${a.name} ${a.sector}`.toLowerCase().includes(q)) return false;
     return true;
   });
-  const quotes = await getQuotes(assets.map((a) => a.symbol));
+  const quotes = await getQuotes(Array.from(new Set([...assets.map((a) => a.symbol), ...CRYPTO_SYMBOLS])));
   const quoteOf = new Map(quotes.map((x) => [x.symbol, x]));
   const providers = marketProviderStatus();
 
@@ -48,7 +49,9 @@ export default async function MercadoPage({ searchParams }: { searchParams: Sear
         </form>
       </div>
 
-      <div className="filters">
+      <CryptoTicker initial={CRYPTO_SYMBOLS.map((s) => quoteOf.get(s)!).filter(Boolean)} />
+
+      <div className="filters" style={{ marginTop: 18 }}>
         <Link href={href(searchParams, { tipo: undefined })} className={`toggle ${!searchParams.tipo ? "on" : ""}`}>Todos</Link>
         {(Object.keys(ASSET_TYPE_LABEL) as AssetType[]).map((t) => (
           <Link key={t} href={href(searchParams, { tipo: t })} className={`toggle ${searchParams.tipo === t ? "on" : ""}`}>{ASSET_TYPE_LABEL[t]}s</Link>

@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
 import NavBar from "@/components/NavBar";
+import NavProgress from "@/components/NavProgress";
 
 const display = Space_Grotesk({ subsets: ["latin"], variable: "--font-display", display: "swap" });
 const sans = DM_Sans({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
@@ -17,6 +19,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className={`${display.variable} ${sans.variable}`}>
       <body>
+        <Suspense fallback={null}>
+          <NavProgress />
+        </Suspense>
         <NavBar />
         <main className="container">{children}</main>
       </body>

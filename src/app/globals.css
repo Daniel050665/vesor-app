@@ -683,3 +683,36 @@ main.container:has(.auth-page) { max-width: none; padding: 0; }
 @media (prefers-reduced-motion: reduce) { .onb-track, .onb-backdrop { transition: none; animation: none; } }
 .help-details summary { cursor: pointer; font-weight: 600; font-size: 15px; }
 .help-details[open] summary { margin-bottom: 10px; }
+
+/* Cinta de criptomonedas en vivo */
+.ticker-live { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+.ticker-badge { display: inline-flex; align-items: center; gap: 6px; flex: none; font-size: 12px; font-weight: 600; color: var(--accent); }
+.ticker-badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: live-pulse 1.6s ease-in-out infinite; }
+.ticker-badge.is-off { color: var(--fg-muted); }
+.ticker-badge.is-off i { background: var(--fg-muted); animation: none; }
+@keyframes live-pulse { 50% { opacity: .3; transform: scale(.7); } }
+.ticker-viewport { flex: 1; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.ticker-track { display: flex; width: max-content; animation: ticker-move linear infinite; }
+.ticker-live:hover .ticker-track, .ticker-live:focus-within .ticker-track { animation-play-state: paused; }
+@keyframes ticker-move { to { transform: translateX(-50%); } }
+.ticker-item { display: inline-flex; align-items: baseline; gap: 8px; padding: 2px 18px; border-right: 1px solid var(--line); color: var(--fg); white-space: nowrap; border-radius: 6px; transition: background .4s; }
+.ticker-item:hover { text-decoration: none; background: var(--surface-2); }
+.ticker-item strong { font-family: var(--font-display), sans-serif; font-size: 14px; }
+.ticker-item span { font-size: 14px; font-variant-numeric: tabular-nums; }
+.ticker-item small { font-size: 12px; }
+.ticker-item.flash-up { background: color-mix(in oklch, var(--gain) 22%, transparent); }
+.ticker-item.flash-down { background: color-mix(in oklch, var(--loss) 22%, transparent); }
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+  .ticker-viewport { overflow-x: auto; mask-image: none; }
+}
+.ticker-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 640px) { .ticker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ticker-badge { font-size: 0; gap: 0; } }
+
+/* Indicador de carga entre páginas y foco visible para teclado */
+.page-loading { position: fixed; top: 0; left: 0; right: 0; z-index: 60; height: 3px; overflow: hidden; }
+.page-loading-bar { position: absolute; inset: 0 auto 0 0; width: 40%; background: linear-gradient(90deg, transparent, var(--accent), transparent); animation: page-loading 1s ease-in-out infinite; }
+@keyframes page-loading { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { .page-loading-bar { animation: none; width: 100%; opacity: .5; } }
